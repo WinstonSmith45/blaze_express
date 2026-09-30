@@ -1,0 +1,57 @@
+{% load static %}<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Дашборд WB</title>
+  <link rel="stylesheet" href="{% static 'dashboard/style.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script type="module" src="{% static 'dashboard/js/main.js' %}"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="seller">
+      <div class="seller-name" id="seller-name">—</div>
+      <div class="seller-meta" id="seller-meta"></div>
+    </div>
+    <div class="balance">
+      <div><span class="muted">Баланс</span> <strong id="balance-current">—</strong></div>
+      <div><span class="muted">К выводу</span> <strong id="balance-withdraw">—</strong></div>
+    </div>
+    <div class="run-time"><span class="muted">Данные на</span> <strong id="run-time">—</strong></div>
+    <form class="user" method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <span class="muted">{{ user.get_username }}</span>
+      {% if user.is_staff %}<a href="{% url 'admin:index' %}">Админка</a>{% endif %}
+      <button type="submit">Выйти</button>
+    </form>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar">
+      <a href="#summary" data-section="summary">Сводка</a>
+
+      <div class="nav-group">Аналитика и данные</div>
+      <a href="#funnel" data-section="funnel">Воронка продаж</a>
+      <div class="nav-subgroup">История остатков</div>
+      <a href="#stocks-products" data-section="stocks-products" class="nav-leaf">Данные по товарам</a>
+      <a href="#stocks-warehouses" data-section="stocks-warehouses" class="nav-leaf">Остатки на складах WB</a>
+
+      <div class="nav-group">Отчёты</div>
+      <div class="nav-subgroup">Основные отчёты</div>
+      <a href="#orders" data-section="orders" class="nav-leaf">Заказы</a>
+      <a href="#sales" data-section="sales" class="nav-leaf">Продажи</a>
+
+      <div class="nav-group">Документы и бухгалтерия</div>
+      <div class="nav-subgroup">Финансовые отчёты</div>
+      <a href="#finance-reports" data-section="finance-reports" class="nav-leaf">Отчёты реализации</a>
+      <a href="#finance-detailed" data-section="finance-detailed" class="nav-leaf">Детализация</a>
+    </nav>
+
+    <main>
+      <div id="sections"></div>
+      <p class="error" id="error" hidden></p>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,2 @@
+# Collect WB data every 3 hours (UTC). run.sh skips a run if the previous one is still going.
+0 */3 * * * /app/run.sh

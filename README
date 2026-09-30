@@ -1,0 +1,19 @@
+Install `requests`.
+`cp .env.example .env` and fill in WB_TOKEN.
+Run with `./run.sh`.
+Final report in `data/report.csv`.
+Logs in `data/*/log`.
+
+Dashboard (Django):
+`uv venv .venv && VIRTUAL_ENV=.venv uv pip install -r requirements.txt`.
+Add DJANGO_* settings from `.env.example` to `.env` (DJANGO_DEBUG=1 for local use).
+`.venv/bin/python manage.py migrate`, then `.venv/bin/python manage.py runserver`.
+Create a user: `.venv/bin/python manage.py createsuperuser` (more users at http://127.0.0.1:8000/admin/).
+Open http://127.0.0.1:8000 and log in. The page picks up new runs of `./run.sh` automatically.
+
+Docker:
+`cp .env.example .env`, fill in WB_TOKEN, DJANGO_SECRET_KEY, set DJANGO_DEBUG=0 and APP_UID/APP_GID (`id -u`, `id -g`).
+`mkdir -p data db` (to keep existing users: `cp db.sqlite3 db/`).
+`docker compose up -d --build` starts the dashboard at http://127.0.0.1:8000 and the collector, which runs `./run.sh` every 3 hours (see `crontab`).
+Create a user: `docker compose exec web python manage.py createsuperuser`.
+Logs: `docker compose logs web`, collector runs in `data/*/log`.

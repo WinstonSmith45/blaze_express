@@ -1,0 +1,36 @@
+x-app: &app
+  build:
+    context: .
+    args:
+      APP_UID: ${APP_UID:-1000}
+      APP_GID: ${APP_GID:-1000}
+  image: wb-dashboard
+  env_file: .env
+  volumes:
+    - ./data:/app/data
+    - ./db:/app/db
+  restart: unless-stopped
+
+services:
+  web:
+    <<: *app
+    ports:
+      - "127.0.0.1:8000:8000"
+    # Healthy if Django answers at all; 4xx (e.g. a Host not in DJANGO_ALLOWED_HOSTS) still counts.
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import urllib.request as r, urllib.error as e
+          try: r.urlopen("http://127.0.0.1:8000/login/", timeout=5)
+          except e.HTTPError as x: raise SystemExit(x.code >= 500)
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+
+  collector:
+    <<: *app
+    command: ["supercronic", "/app/crontab"]
